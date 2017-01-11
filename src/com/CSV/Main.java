@@ -8,13 +8,16 @@ public class Main {
 
         CSVloader loader = new CSVloader("products.csv");
 
-        CSVmodifier mod = new CSVmodifier(loader.getTable(";"));
+        CSVmodifier mod = new CSVmodifier(loader.getTable("\"", ";"));
 
         mod.makeTransformations();
 
         CSVwriter writer = new CSVwriter("result.csv");
 
-        if (writer.writeCSV(mod.getHeaders(), mod.getData(), "\'", "|", "ISO-8859-1")) System.out.println("File " + writer.getFileName() + " generated correctly.");;
+        if (writer.writeCSV(mod.getHeaders(), mod.getData(), "\'", "|", "ISO-8859-1"))
+            System.out.println("File " + writer.getFileName() + " generated correctly.");;
 
     }
+
+
 }

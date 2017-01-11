@@ -16,8 +16,7 @@ public class CSVmodifier {
         headers = input[0].clone();
         data = new String[input.length - 1][];
         for (int i = 0; i < input.length - 1; i++){
-            data[i] = new String[input[0].length];
-            System.arraycopy(input[i+1], 0, data[i], 0, input[i+1].length);
+            data[i] = input[i+1].clone();
         }
     }
 
@@ -29,30 +28,42 @@ public class CSVmodifier {
         return headers;
     }
 
-    private void changeHeaders(String... strings){
-        headers = strings.clone();
-    }
-
     public void makeTransformations(){
         changeHeaders("name", "offerurl", "price", "published", "description");
-        removeQuoteCharacters("\"");
         makeOfferurl();
         makePrice();
         makePublished();
     }
 
-    private void removeQuoteCharacters(String quoteCharacter) {
-        for (String[] s: data){
-            for (int i = 0; i < data[0].length; i++){
-                if (s[i] != null) s[i] = s[i].replace(quoteCharacter, "");
-                else s[i] = "";
-            }
-        }
+    private void changeHeaders(String... strings){
+        headers = strings.clone();
     }
 
     private void makeOfferurl(){
         for (String[] s: data){
             s[1] = s[1] + "?id=" + s[2];
+        }
+    }
+
+    private void makePrice() {
+        for (String[] s: data) {
+            s[2] = s[3].replaceAll("[^0-9.,]+", ""); // delete all but digits, dots and commas
+            s[2] = s[2].replaceAll(",", "."); //replace commas with dots
+
+            // count number of dot appearances:
+            int counter = 0;
+            for (int i = 0; i < s[2].length(); i++) {
+                if (s[2].charAt(i) == '.') {
+                    counter++;
+                }
+            }
+            // delete all but the last dot:
+            while (counter > 1) {
+                s[2] = s[2].replaceFirst("\\.", "");
+                counter -= counter;
+            }
+
+            s[2] = String.format(Locale.US, "%.2f", Double.parseDouble(s[2]));
         }
     }
 
@@ -97,26 +108,6 @@ public class CSVmodifier {
         return str;
     }
 
-    private void makePrice() {
-        for (String[] s: data) {
-            s[2] = s[3].replaceAll("[^0-9.,]+", ""); // delete all but digits, dots and commas
-            s[2] = s[2].replaceAll(",", "."); //replace commas with dots
 
-            // count number of dot appearances:
-            int counter = 0;
-            for (int i = 0; i < s[2].length(); i++) {
-                if (s[2].charAt(i) == '.') {
-                    counter++;
-                }
-            }
-            // delete all but the last dot:
-            while (counter > 1) {
-                s[2] = s[2].replaceFirst("\\.", "");
-                counter -= counter;
-            }
-
-            s[2] = String.format(Locale.US, "%.2f", Double.parseDouble(s[2]));
-        }
-    }
 
 }

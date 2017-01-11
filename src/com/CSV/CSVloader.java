@@ -35,7 +35,6 @@ public class CSVloader {
             while ((line = br.readLine()) != null) {
                 sLines.add(line);
             }
-
             return sLines;
 
         } catch (IOException e) {
@@ -46,7 +45,7 @@ public class CSVloader {
         return null;
     }
 
-    public String[][] getTable(String delimiter){
+    private String[][] linesToTable(String delimiter){
         ArrayList<String> lines = getLines();
         if (lines != null) {
             String[][] table = new String[lines.size()][];
@@ -56,5 +55,25 @@ public class CSVloader {
             return table;
         }
         return null;
+    }
+
+    private void removeQuoteCharacters(String quoteCharacter, String[][] data) {
+        for (String[] s: data){
+            for (int i = 0; i < data[0].length; i++){
+                if (s[i] != null) s[i] = s[i].replace(quoteCharacter, "");
+                else s[i] = "";
+            }
+        }
+    }
+
+    public String[][] getTable(String quoteCharacter, String delimiter){
+        String[][] input = linesToTable(delimiter);
+        String[][] data = new String[input.length][];
+        for (int i = 0; i < input.length; i++){
+            data[i] = new String[input[0].length];
+            System.arraycopy(input[i], 0, data[i], 0, input[i].length);
+        }
+        removeQuoteCharacters(quoteCharacter, data);
+        return data;
     }
 }
